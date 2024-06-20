@@ -53,6 +53,10 @@
       "path": "packages/google-workspace-adapter",
     },
     {
+      "name": "zoom-adapter",
+      "path": "packages/zoom-adapter",
+    },
+    {
       "name": "intercom-adapter",
       "path": "packages/intercom-adapter",
     },
