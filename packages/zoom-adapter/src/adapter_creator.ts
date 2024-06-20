@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { createAdapter, credentials } from '@salto-io/adapter-components'
-import { Credentials, credentialsType } from './auth'
 import createChangeValidator from './change_validator'
 import { DEFAULT_CONFIG, UserConfig } from './config'
 import { createConnection } from './client/connection'
@@ -23,6 +22,13 @@ import { createClientDefinitions, createDeployDefinitions, createFetchDefinition
 import { PAGINATION } from './definitions/requests/pagination'
 import { Options } from './definitions/types'
 import { REFERENCES } from './definitions/references'
+import {
+  Credentials,
+  createFromOauthResponse,
+  createOAuthRequest,
+  credentialsType,
+  oauthRequestParameters,
+} from './client/oauth'
 
 const { defaultCredentialsFromConfig } = credentials
 
@@ -31,6 +37,12 @@ export const adapter = createAdapter<Credentials, Options, UserConfig>({
   authenticationMethods: {
     basic: {
       credentialsType,
+    },
+    oauth: {
+      createOAuthRequest,
+      credentialsType,
+      oauthRequestParameters,
+      createFromOauthResponse,
     },
   },
   defaultConfig: DEFAULT_CONFIG,

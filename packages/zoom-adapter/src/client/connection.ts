@@ -13,29 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import _ from 'lodash'
+import axios from 'axios'
 import { AccountInfo } from '@salto-io/adapter-api'
 import { client as clientUtils } from '@salto-io/adapter-components'
 import { logger } from '@salto-io/logging'
-import { Credentials } from '../auth'
+import { BASE_OAUTH_URL, Credentials } from './oauth'
 
 const log = logger(module)
 
 export const validateCredentials = async ({
   connection,
-  credentials,
 }: {
   credentials: Credentials
   connection: clientUtils.APIConnection
 }): Promise<AccountInfo> => {
   try {
     // TODO replace with some valid endpoint, identify production accounts
-    const res = await connection.get('/api/v2/account')
-    const accountId = credentials.subdomain
-    const isSandbox = _.get(res.data, 'account.sandbox')
-    if (isSandbox !== undefined) {
-      return { accountId, isProduction: !isSandbox }
-    }
+    const res = await connection.get('/users/me')
+    const accountId = res.data.account_id // TODO replace with something global for the account
     return { accountId }
   } catch (e) {
     log.error('Failed to validate credentials: %s', e)
@@ -43,17 +38,33 @@ export const validateCredentials = async ({
   }
 }
 
+const getAccessToken = async ({ clientId, clientSecret, refreshToken }: Credentials): Promise<string> => {
+  const httpClient = axios.create({
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+  })
+  const data = new URLSearchParams({
+    client_id: clientId,
+    client_secret: clientSecret,
+    grant_type: 'refresh_token',
+    refresh_token: refreshToken,
+  })
+  const res = await httpClient.post(`${BASE_OAUTH_URL}/token`, data)
+  return res.data.access_token
+}
+
 export const createConnection: clientUtils.ConnectionCreator<Credentials> = retryOptions =>
   clientUtils.axiosConnection({
     retryOptions,
-    baseURLFunc: async () => 'https://localhost:80', // TODO replace with base URL, creds can be used
-    authParamsFunc: async ({ username, password }: Credentials) => ({
-      // TODO adjust / remove (usually only one of the following is needed)
-      auth: { username, password },
-      // headers: {
-      //   Authorization: `Bearer ${token}`,
-      //   'x-custom-header': `${token}`,
-      // },
-    }),
+    baseURLFunc: async () => 'https://api.zoom.us/v2',
+    authParamsFunc: async (credentials: Credentials) => {
+      const accessToken = await getAccessToken(credentials)
+      return {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    },
     credValidateFunc: validateCredentials,
   })
