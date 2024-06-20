@@ -57,6 +57,7 @@
     "@salto-io/serviceplaceholder-adapter": "0.3.58",
     "@salto-io/stripe-adapter": "0.3.58",
     "@salto-io/pagerduty-adapter": "0.3.58",
+    "@salto-io/zoom-adapter": "0.3.58",
     "@salto-io/workato-adapter": "0.3.58",
     "@salto-io/workspace": "0.3.58",
     "@salto-io/zendesk-adapter": "0.3.58",
