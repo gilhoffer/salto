@@ -102,7 +102,7 @@ const createCustomizations = (): Record<string, definitions.fetch.InstanceFetchA
     },
   },
 
-  user: { // XXX: didn't implement pagination yet -- instead of transform should recurseInto and create topLevels for all users
+  user: { // XXX instead of transform should recurseInto and create topLevels for all users with more details
     requests: [
       {
         endpoint: {
@@ -222,7 +222,38 @@ const createCustomizations = (): Record<string, definitions.fetch.InstanceFetchA
       fieldCustomizations: {
       },
     },
-  }
+  },
+  device: { 
+    requests: [
+      {
+        endpoint: {
+          path: '/devices',
+        },
+        transformation: {
+          root: 'devices',
+        },
+      },
+    ],
+    resource: {
+      directFetch: true,
+      serviceIDFields: ['device_id'],
+    },
+
+    element: {
+      topLevel: {
+        isTopLevel: true,
+        elemID: { parts: [{ fieldName: 'device_name' }] }, 
+      },
+      fieldCustomizations: {
+        last_online: {
+          hide: true,
+        },
+        device_id: {
+          hide: true,
+        },
+      },
+    }
+  },
 })
 
 export const createFetchDefinitions = (

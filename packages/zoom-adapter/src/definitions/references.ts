@@ -23,6 +23,17 @@ const REFERENCE_RULES: referenceUtils.FieldReferenceDefinition<
 >[] = [
   // TODO adjust and remove unneeded examples and documentation
 
+  {
+    src: {field: 'room_id'},
+    serializationStrategy: 'id',
+    target: {type: 'room'},
+  },
+  {
+    src: {field: 'device_id'},
+    serializationStrategy: 'id',
+    target: {type: 'device'},
+  },
+
   // all fields called group_id or group_ids are assumed to reference group instances by their id field
   {
     src: { field: 'group_id' },
