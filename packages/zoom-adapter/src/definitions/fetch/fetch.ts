@@ -101,6 +101,26 @@ const createCustomizations = (): Record<string, definitions.fetch.InstanceFetchA
       },
     },
   },
+  webinarRegistrationSettings: {
+    requests: [
+      {
+        endpoint: {
+          path: '/accounts/me/settings/registration',
+        },
+      },
+    ],
+    resource: {
+      // this type can be included/excluded based on the user's fetch query
+      directFetch: true,
+    },
+    element: {
+      topLevel: {
+        // isTopLevel should be set when the workspace can have instances of this type
+        isTopLevel: true,
+        singleton: true, // to make a Settings Instance
+      },
+    },
+  },
 
   user: { // XXX instead of transform should recurseInto and create topLevels for all users with more details
     requests: [
@@ -133,6 +153,35 @@ const createCustomizations = (): Record<string, definitions.fetch.InstanceFetchA
         last_login_time: {
           hide: true,
         },
+        id: {
+          hide: true,
+        },
+      },
+    }
+  },
+
+  role: { // XXX instead of transform should recurseInto and create topLevels for all users with more details
+    requests: [
+      {
+        endpoint: {
+          path: '/roles',
+        },
+        transformation: {
+          root: 'roles',
+        },
+      },
+    ],
+    resource: {
+      directFetch: true,
+      serviceIDFields: ['id'],
+    },
+
+    element: {
+      topLevel: {
+        isTopLevel: true,
+        elemID: { parts: [{ fieldName: 'name' }] }, 
+      },
+      fieldCustomizations: {
         id: {
           hide: true,
         },
