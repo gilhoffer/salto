@@ -16,7 +16,6 @@
 import _ from 'lodash'
 import { definitions, deployment } from '@salto-io/adapter-components'
 import { AdditionalAction, ClientOptions } from '../types'
-import { getBusinessHoursScheduleDefinition } from './business_hours_schedule'
 
 type InstanceDeployApiDefinitions = definitions.deploy.InstanceDeployApiDefinitions<AdditionalAction, ClientOptions>
 
@@ -27,10 +26,24 @@ const createCustomizations = (): Record<string, InstanceDeployApiDefinitions> =>
     AdditionalAction,
     ClientOptions
   >({
-    group: { bulkPath: '/api/v2/groups', nestUnderField: 'group' },
   })
   const customDefinitions: Record<string, Partial<InstanceDeployApiDefinitions>> = {
-    business_hours_schedule: getBusinessHoursScheduleDefinition(),
+    settings: { // XXX first implementation, just support patching the settings.
+      requestsByAction: {
+        customizations: {
+          modify: [
+            {
+              request: {
+                endpoint: {
+                  path: '/accounts/me/settings',
+                  method: 'patch',
+                },
+              },
+            },
+          ]
+        }
+      },
+    },
   }
   return _.merge(standardRequestDefinitions, customDefinitions)
 }
@@ -50,14 +63,5 @@ export const createDeployDefinitions = (): definitions.deploy.DeployApiDefinitio
     },
     customizations: createCustomizations(),
   },
-  dependencies: [
-    // {
-    //   first: { type: 'dynamic_content_item', action: 'add' },
-    //   second: { type: 'dynamic_content_item_variant', action: 'add' },
-    // },
-    // {
-    //   first: { type: 'dynamic_content_item', action: 'remove' },
-    //   second: { type: 'dynamic_content_item_variant', action: 'remove' },
-    // },
-  ],
+  dependencies: [],
 })
