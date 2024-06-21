@@ -303,6 +303,68 @@ const createCustomizations = (): Record<string, definitions.fetch.InstanceFetchA
       },
     }
   },
+  calendarService: { 
+    requests: [
+      {
+        endpoint: {
+          path: '/rooms/calendar/services',
+        },
+        transformation: {
+          root: 'calendar_services',
+        },
+      },
+    ],
+    resource: {
+      directFetch: true,
+      serviceIDFields: ['calendar_service_id'],
+      recurseInto: {
+        calendarResource: {
+          typeName: 'calendar__calendarResource',
+          single: false,
+          context: {
+            args: {
+              serviceId: {
+                root: 'calendar_service_id',
+              },
+            },
+          },
+        },
+      },
+    },
+    element: {
+      topLevel: {
+        isTopLevel: true,
+        elemID: { parts: [{ fieldName: 'calendar_service_name' }] }, 
+      },
+      fieldCustomizations: {
+        added_date_time: {
+          hide: true,
+        },
+        latest_synced_date_time: {
+          hide: true,
+        },
+      },
+    }
+  },
+  calendar__calendarResource: {
+    requests: [
+      {
+        endpoint: {
+          path: '/rooms/calendar/services/{serviceId}/resources',
+        },
+        transformation: {
+          root: 'calendar_resources',
+        },
+      },
+    ],
+    element: {
+      fieldCustomizations: {
+        calendar_resource_id: {
+          hide: true,
+        },
+      },
+    },
+  },
 })
 
 export const createFetchDefinitions = (

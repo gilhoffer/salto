@@ -38,6 +38,16 @@ const REFERENCE_RULES: referenceUtils.FieldReferenceDefinition<
     serializationStrategy: 'id',
     target: {type: 'role'},
   },
+  {
+    src: {field: 'calendar_resource_id'},
+    serializationStrategy: 'id',
+    target: {type: 'calendar__calendarResource'},
+  },
+  {
+    src: {field: 'assigned_room_id'},
+    serializationStrategy: 'id',
+    target: {type: 'room'},
+  },
 
   // all fields called group_id or group_ids are assumed to reference group instances by their id field
   {
